@@ -6,6 +6,7 @@ import jetbrains.buildServer.buildTriggers.BuildTriggerException;
 import jetbrains.buildServer.buildTriggers.PolledBuildTrigger;
 import jetbrains.buildServer.buildTriggers.PolledTriggerContext;
 import jetbrains.buildServer.buildTriggers.async.BaseAsyncPolledBuildTrigger;
+import jetbrains.buildServer.serverSide.SimpleParameter;
 import net.mojang.manifest.versions.Manifest;
 import net.mojang.manifest.versions.Version;
 import org.apache.http.HttpEntity;
@@ -52,6 +53,7 @@ public class MinecraftSnapshotBuildTriggerPolicy extends BaseAsyncPolledBuildTri
                 final Date latestSnapshotDate = getDateForRelease(manifest, manifest.getLatest().getSnapshot());
 
                 if (currentSnapshotDate.before(latestSnapshotDate)) {
+                    context.getBuildType().addBuildParameter(new SimpleParameter(jetbrains.buildServer.agent.Constants.ENV_PREFIX + "MC_VERSION", manifest.getLatest().getSnapshot()));
                     context.getBuildType().addToQueue(Constants.MINECRAFT_SNAPSHOT_TRIGGER_NAME);
                     return manifest.getLatest().getSnapshot();
                 }

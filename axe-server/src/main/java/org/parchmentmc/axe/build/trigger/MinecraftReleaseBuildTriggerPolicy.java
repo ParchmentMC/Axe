@@ -7,6 +7,7 @@ import jetbrains.buildServer.buildTriggers.PolledBuildTrigger;
 import jetbrains.buildServer.buildTriggers.PolledTriggerContext;
 import jetbrains.buildServer.buildTriggers.async.AsyncPolledBuildTrigger;
 import jetbrains.buildServer.buildTriggers.async.BaseAsyncPolledBuildTrigger;
+import jetbrains.buildServer.serverSide.SimpleParameter;
 import net.mojang.manifest.versions.Manifest;
 import net.mojang.manifest.versions.Version;
 import org.apache.http.HttpEntity;
@@ -53,6 +54,7 @@ public class MinecraftReleaseBuildTriggerPolicy extends BaseAsyncPolledBuildTrig
                 final Date latestReleaseDate = getDateForRelease(manifest, manifest.getLatest().getRelease());
 
                 if (currentReleaseDate.before(latestReleaseDate)) {
+                    context.getBuildType().addBuildParameter(new SimpleParameter(jetbrains.buildServer.agent.Constants.ENV_PREFIX + "MC_VERSION", manifest.getLatest().getRelease()));
                     context.getBuildType().addToQueue(Constants.MINECRAFT_RELEASE_TRIGGER_NAME);
                     return manifest.getLatest().getRelease();
                 }
