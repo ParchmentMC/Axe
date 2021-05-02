@@ -1,0 +1,25 @@
+apply plugin: 'com.github.rodm.teamcity-agent'
+apply plugin: 'com.github.rodm.teamcity-server'
+
+def vendorName = 'ParchmentMC'
+
+dependencies {
+    server project(':axe-common')
+    server project(':axe-server')
+}
+
+teamcity {
+    server {
+        descriptor = file("$rootDir/teamcity-plugin.xml")
+        tokens Version: project.version, VendorName: vendorName
+
+        baseHomeDir = serversDir
+
+        environments {
+            teamcity9 {
+                version = '9.1.6'
+                homeDir = file("${baseHomeDir}/TeamCity-${version}")
+            }
+        }
+    }
+}

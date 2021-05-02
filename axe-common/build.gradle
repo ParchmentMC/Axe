@@ -1,0 +1,12 @@
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'http://repository.jetbrains.com/all'
+    }
+}
+
+dependencies {
+    testCompile "junit:junit:3.8.1"
+}

@@ -1,0 +1,8 @@
+# IDE/Project Settings
+*.idea
+*.iml
+
+.gradle
+*/build/
+teamcity
+downloads

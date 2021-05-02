@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<teamcity-plugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:schemas-jetbrains-com:teamcity-plugin-v1-xml">
+    <info>
+        <name>Axe</name>
+        <display-name>Axe</display-name>
+        <version>@Version@</version>
+        <description>Custom TeamCity plugin for managing project related to ParchmentMC</description>
+        <vendor>
+            <name>@VendorName@</name>
+        </vendor>
+    </info>
+    <deployment use-separate-classloader="true" />
+</teamcity-plugin>
