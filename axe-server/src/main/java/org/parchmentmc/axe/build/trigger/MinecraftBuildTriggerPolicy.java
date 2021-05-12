@@ -1,11 +1,13 @@
 package org.parchmentmc.axe.build.trigger;
 
+import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import jetbrains.buildServer.BuildType;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
 import jetbrains.buildServer.buildTriggers.PolledTriggerContext;
 import jetbrains.buildServer.buildTriggers.async.BaseAsyncPolledBuildTrigger;
-import jetbrains.buildServer.serverSide.SimpleParameter;
+import jetbrains.buildServer.serverSide.*;
 import net.mojang.manifest.versions.Manifest;
 import net.mojang.manifest.versions.Version;
 import org.apache.http.HttpEntity;
@@ -21,12 +23,21 @@ import org.parchmentmc.axe.common.Constants;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MinecraftBuildTriggerPolicy extends BaseAsyncPolledBuildTrigger
 {
     private static final Gson GSON = new GsonBuilder()
                                        .setDateFormat("yyyy-MM-dd'T'HH:mm:ss+00:00")
                                        .create();
+
+    private final BuildCustomizerFactory buildCustomizerFactory;
+
+    public MinecraftBuildTriggerPolicy(final BuildCustomizerFactory customizerFactory)
+    {
+        this.buildCustomizerFactory = customizerFactory;
+    }
 
     private static Date getDateForRelease(final Manifest manifest, final String releaseName) {
         return manifest.getVersions().stream().filter(v -> v.getId().equals(releaseName)).map(Version::getReleaseTime).findFirst().orElse(Date.from(Instant.EPOCH));
@@ -53,23 +64,43 @@ public class MinecraftBuildTriggerPolicy extends BaseAsyncPolledBuildTrigger
                 final Date latestReleaseDate = getDateForRelease(manifest, manifest.getLatest().getRelease());
 
                 if (currentDate.before(latestSnapshotDate) && latestSnapshotDate.before(latestReleaseDate)) {
-                    context.getBuildType().addBuildParameter(new SimpleParameter(jetbrains.buildServer.agent.Constants.ENV_PREFIX + "MC_VERSION", manifest.getLatest().getRelease()));
-                    context.getBuildType().addToQueue(Constants.MINECRAFT_TRIGGER_NAME);
+                    final BuildCustomizer buildCustomizer = buildCustomizerFactory.createBuildCustomizer(context.getBuildType(), null);
+                    final Map<String, String> customParams = new HashMap<>();
+                    customParams.put(jetbrains.buildServer.agent.Constants.ENV_PREFIX + "MC_VERSION", manifest.getLatest().getRelease());
+                    buildCustomizer.setParameters(customParams);
+
+                    final BuildPromotion buildPromotion = buildCustomizer.createPromotion();
+                    buildPromotion.addToQueue(Constants.MINECRAFT_TRIGGER_NAME);
                     return manifest.getLatest().getRelease();
                 }
                 else if (currentDate.before(latestReleaseDate) && latestReleaseDate.before(latestSnapshotDate)) {
-                    context.getBuildType().addBuildParameter(new SimpleParameter(jetbrains.buildServer.agent.Constants.ENV_PREFIX + "MC_VERSION", manifest.getLatest().getSnapshot()));
-                    context.getBuildType().addToQueue(Constants.MINECRAFT_TRIGGER_NAME);
+                    final BuildCustomizer buildCustomizer = buildCustomizerFactory.createBuildCustomizer(context.getBuildType(), null);
+                    final Map<String, String> customParams = new HashMap<>();
+                    customParams.put(jetbrains.buildServer.agent.Constants.ENV_PREFIX + "MC_VERSION", manifest.getLatest().getSnapshot());
+                    buildCustomizer.setParameters(customParams);
+
+                    final BuildPromotion buildPromotion = buildCustomizer.createPromotion();
+                    buildPromotion.addToQueue(Constants.MINECRAFT_TRIGGER_NAME);
                     return manifest.getLatest().getSnapshot();
                 }
                 else if (latestSnapshotDate.before(currentDate) && currentDate.before(latestReleaseDate)) {
-                    context.getBuildType().addBuildParameter(new SimpleParameter(jetbrains.buildServer.agent.Constants.ENV_PREFIX + "MC_VERSION", manifest.getLatest().getRelease()));
-                    context.getBuildType().addToQueue(Constants.MINECRAFT_TRIGGER_NAME);
+                    final BuildCustomizer buildCustomizer = buildCustomizerFactory.createBuildCustomizer(context.getBuildType(), null);
+                    final Map<String, String> customParams = new HashMap<>();
+                    customParams.put(jetbrains.buildServer.agent.Constants.ENV_PREFIX + "MC_VERSION", manifest.getLatest().getRelease());
+                    buildCustomizer.setParameters(customParams);
+
+                    final BuildPromotion buildPromotion = buildCustomizer.createPromotion();
+                    buildPromotion.addToQueue(Constants.MINECRAFT_TRIGGER_NAME);
                     return manifest.getLatest().getRelease();
                 }
                 else if (latestReleaseDate.before(currentDate) && currentDate.before(latestSnapshotDate)) {
-                    context.getBuildType().addBuildParameter(new SimpleParameter(jetbrains.buildServer.agent.Constants.ENV_PREFIX + "MC_VERSION", manifest.getLatest().getSnapshot()));
-                    context.getBuildType().addToQueue(Constants.MINECRAFT_TRIGGER_NAME);
+                    final BuildCustomizer buildCustomizer = buildCustomizerFactory.createBuildCustomizer(context.getBuildType(), null);
+                    final Map<String, String> customParams = new HashMap<>();
+                    customParams.put(jetbrains.buildServer.agent.Constants.ENV_PREFIX + "MC_VERSION", manifest.getLatest().getSnapshot());
+                    buildCustomizer.setParameters(customParams);
+
+                    final BuildPromotion buildPromotion = buildCustomizer.createPromotion();
+                    buildPromotion.addToQueue(Constants.MINECRAFT_TRIGGER_NAME);
                     return manifest.getLatest().getSnapshot();
                 }
 

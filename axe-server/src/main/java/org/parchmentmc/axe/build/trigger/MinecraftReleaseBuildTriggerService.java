@@ -6,6 +6,7 @@ import jetbrains.buildServer.buildTriggers.BuildTriggerService;
 import jetbrains.buildServer.buildTriggers.BuildTriggeringPolicy;
 import jetbrains.buildServer.buildTriggers.async.AsyncPolledBuildTriggerFactory;
 import jetbrains.buildServer.log.Loggers;
+import jetbrains.buildServer.serverSide.BuildCustomizerFactory;
 import org.jetbrains.annotations.NotNull;
 import org.parchmentmc.axe.common.Constants;
 
@@ -16,10 +17,10 @@ public class MinecraftReleaseBuildTriggerService extends BuildTriggerService
     private final        BuildTriggeringPolicy policy;
 
     public MinecraftReleaseBuildTriggerService(
-      @NotNull final AsyncPolledBuildTriggerFactory triggerFactory
-    )
+      @NotNull final AsyncPolledBuildTriggerFactory triggerFactory,
+      @NotNull final BuildCustomizerFactory buildCustomizerFactory)
     {
-        this.policy = triggerFactory.createBuildTrigger(new MinecraftReleaseBuildTriggerPolicy(), LOG);
+        this.policy = triggerFactory.createBuildTrigger(new MinecraftReleaseBuildTriggerPolicy(buildCustomizerFactory), LOG);
     }
 
     @NotNull

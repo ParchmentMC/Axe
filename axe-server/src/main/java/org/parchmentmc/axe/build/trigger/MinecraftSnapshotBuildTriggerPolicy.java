@@ -6,6 +6,9 @@ import jetbrains.buildServer.buildTriggers.BuildTriggerException;
 import jetbrains.buildServer.buildTriggers.PolledBuildTrigger;
 import jetbrains.buildServer.buildTriggers.PolledTriggerContext;
 import jetbrains.buildServer.buildTriggers.async.BaseAsyncPolledBuildTrigger;
+import jetbrains.buildServer.serverSide.BuildCustomizer;
+import jetbrains.buildServer.serverSide.BuildCustomizerFactory;
+import jetbrains.buildServer.serverSide.BuildPromotion;
 import jetbrains.buildServer.serverSide.SimpleParameter;
 import net.mojang.manifest.versions.Manifest;
 import net.mojang.manifest.versions.Version;
@@ -22,12 +25,18 @@ import org.parchmentmc.axe.common.Constants;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MinecraftSnapshotBuildTriggerPolicy extends BaseAsyncPolledBuildTrigger
 {
     private static final Gson GSON = new GsonBuilder()
                                        .setDateFormat("yyyy-MM-dd'T'HH:mm:ss+00:00")
                                        .create();
+
+    private final BuildCustomizerFactory buildCustomizerFactory;
+
+    public MinecraftSnapshotBuildTriggerPolicy(final BuildCustomizerFactory buildCustomizerFactory) {this.buildCustomizerFactory = buildCustomizerFactory;}
 
     private static Date getDateForRelease(final Manifest manifest, final String releaseName) {
         return manifest.getVersions().stream().filter(v -> v.getId().equals(releaseName)).map(Version::getReleaseTime).findFirst().orElse(Date.from(Instant.EPOCH));
@@ -53,8 +62,13 @@ public class MinecraftSnapshotBuildTriggerPolicy extends BaseAsyncPolledBuildTri
                 final Date latestSnapshotDate = getDateForRelease(manifest, manifest.getLatest().getSnapshot());
 
                 if (currentSnapshotDate.before(latestSnapshotDate)) {
-                    context.getBuildType().addBuildParameter(new SimpleParameter(jetbrains.buildServer.agent.Constants.ENV_PREFIX + "MC_VERSION", manifest.getLatest().getSnapshot()));
-                    context.getBuildType().addToQueue(Constants.MINECRAFT_SNAPSHOT_TRIGGER_NAME);
+                    final BuildCustomizer buildCustomizer = buildCustomizerFactory.createBuildCustomizer(context.getBuildType(), null);
+                    final Map<String, String> customParams = new HashMap<>();
+                    customParams.put(jetbrains.buildServer.agent.Constants.ENV_PREFIX + "MC_VERSION", manifest.getLatest().getSnapshot());
+                    buildCustomizer.setParameters(customParams);
+
+                    final BuildPromotion buildPromotion = buildCustomizer.createPromotion();
+                    buildPromotion.addToQueue(Constants.MINECRAFT_TRIGGER_NAME);
                     return manifest.getLatest().getSnapshot();
                 }
 
