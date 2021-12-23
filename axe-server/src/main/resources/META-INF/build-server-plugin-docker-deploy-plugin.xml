@@ -6,4 +6,7 @@
     <bean class="org.parchmentmc.axe.build.trigger.MinecraftBuildTriggerService"/>
     <bean class="org.parchmentmc.axe.build.trigger.MinecraftSnapshotBuildTriggerService"/>
     <bean class="org.parchmentmc.axe.build.trigger.MinecraftReleaseBuildTriggerService"/>
+    <bean class="org.parchmentmc.axe.build.feature.OtherBuildTriggerFeature" />
+    <bean class="org.parchmentmc.axe.build.feature.OtherBuildTriggerListener" />
+    <bean class="org.parchmentmc.axe.build.feature.OtherBuildTriggerController" init-method="register" />
 </beans>

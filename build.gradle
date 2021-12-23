@@ -6,12 +6,13 @@ buildscript {
         }
     }
     dependencies {
-        classpath "com.github.rodm:gradle-teamcity-plugin:1.4-beta-2"
+        classpath "com.github.rodm:gradle-teamcity-plugin:1.4.1"
+        classpath 'com.bmuschko:gradle-tomcat-plugin:2.7.0'
     }
 }
 
 group = 'org.parchmentmc.axe'
-version = '1.0'
+version = '2.0'
 
 ext {
     javaVersion = hasProperty('plugin.java.version') ? property('plugin.java.version') : '1.8'
@@ -20,11 +21,14 @@ ext {
     serversDir = project.hasProperty('servers.dir') ? property('servers.dir') : "$rootDir/servers"
 }
 
-configure(subprojects - project(':build')) {
+configure(subprojects - project(':build') - project(':environments')) {
     apply plugin: 'java'
+    apply plugin: 'com.bmuschko.tomcat-base'
 
     sourceCompatibility = javaVersion
     targetCompatibility = javaVersion
+
+    version = rootProject.version
 
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'

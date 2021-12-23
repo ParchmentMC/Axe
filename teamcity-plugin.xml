@@ -4,7 +4,7 @@
         <name>Axe</name>
         <display-name>Axe</display-name>
         <version>@Version@</version>
-        <description>Custom TeamCity plugin for managing project related to ParchmentMC</description>
+        <description>Custom TeamCity plugin for managing Minecraft related triggers and build setups</description>
         <vendor>
             <name>@VendorName@</name>
         </vendor>

@@ -1,0 +1,31 @@
+apply plugin: 'com.github.rodm.teamcity-environments'
+apply plugin: 'com.github.rodm.teamcity-server'
+
+def vendorName = 'ParchmentMC'
+
+dependencies {
+    server project(':axe-common')
+    server project(':axe-server')
+}
+
+teamcity {
+    // Use TeamCity 2021.2.1 API
+    version = '2021.2.1'
+
+    server {
+        // Locate the plugin descriptor in the root directory of the project
+        descriptor = rootProject.file('teamcity-plugin.xml')
+    }
+
+    environments {
+        // base properties for TeamCity servers and data directories
+        baseHomeDir = project.file('teamcity/servers')
+        baseDataDir = project.file('teamcity/data')
+
+        'teamcity2021.2.1' {
+            version = '2021.2.1'
+
+            setServerOptions("-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5500")
+        }
+    }
+}
