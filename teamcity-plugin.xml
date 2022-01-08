@@ -7,7 +7,8 @@
         <description>Custom TeamCity plugin for managing Minecraft related triggers and build setups</description>
         <vendor>
             <name>@VendorName@</name>
+            <url>https://github.com/ParchmentMC</url>
         </vendor>
     </info>
-    <deployment use-separate-classloader="true" />
+  <deployment use-separate-classloader="true" allow-runtime-reload="true" /> <!-- load server plugin's classes in a separate classloader and reload a plugin without the server restart.-->
 </teamcity-plugin>
