@@ -4,6 +4,7 @@ apply plugin: 'com.github.rodm.teamcity-server'
 dependencies {
     compile project(':axe-common')
     provided "org.jetbrains.teamcity.internal:server:${teamcityVersion}"
+    provided "org.jetbrains.teamcity.internal:web:${teamcityVersion}"
 }
 
 teamcity {

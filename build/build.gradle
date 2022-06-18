@@ -4,6 +4,8 @@ apply plugin: 'com.github.rodm.teamcity-environments'
 
 def vendorName = 'ParchmentMC'
 
+version = rootProject.version
+
 dependencies {
     server project(':axe-common')
     server project(':axe-server')
