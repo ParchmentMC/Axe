@@ -7,6 +7,7 @@
         <description>Custom TeamCity plugin for managing project related to ParchmentMC</description>
         <vendor>
             <name>@VendorName@</name>
+            <url>https://parchmentmc.org</url>
         </vendor>
     </info>
     <deployment use-separate-classloader="true" />

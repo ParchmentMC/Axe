@@ -14,6 +14,13 @@ public interface Constants {
     String MINECRAFT_TRIGGER_DISPLAYNAME = "Minecraft Snapshot or Release";
     String MINECRAFT_TRIGGER_DESCRIPTION = "Triggers a build when ever Mojang releases a new version of Minecraft";
 
+    String ATOM_TRIGGER_NAME = "atomTrigger";
+    String ATOM_TRIGGER_DISPLAYNAME = "Atom Feed";
+    String ATOM_TRIGGER_DESCRIPTION = "Triggers a build when an atom feed changes. Watches: %s";
+    String ATOM_TRIGGER_URL_PARAM = "url";
+    String ATOM_TRIGGER_LAST_UPDATED_PATH = "lastUpdatedPath";
+    String ATOM_TRIGGER_NEW_ENTRY_PATH = "newEntryPath";
+
 
     String MINECRAFT_RELEASE_OR_SNAPSHOT_POLICY_LAST_VERSION_KEY = "lastVersion";
 

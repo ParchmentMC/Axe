@@ -11,7 +11,7 @@ buildscript {
 }
 
 group = 'org.parchmentmc.axe'
-version = '1.0'
+version = '2.2.1'
 
 ext {
     javaVersion = hasProperty('plugin.java.version') ? property('plugin.java.version') : '1.8'
@@ -25,6 +25,8 @@ configure(subprojects - project(':build')) {
 
     sourceCompatibility = javaVersion
     targetCompatibility = javaVersion
+
+    version = rootProject.version
 
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
