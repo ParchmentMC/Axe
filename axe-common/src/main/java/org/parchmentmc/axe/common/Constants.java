@@ -24,5 +24,5 @@ public interface Constants {
 
     String MINECRAFT_RELEASE_OR_SNAPSHOT_POLICY_LAST_VERSION_KEY = "lastVersion";
 
-    String MINECRAFT_RELEASE_VERSIONS_MANIFEST = "https://launchermeta.mojang.com/mc/game/version_manifest_v2.json";
+    String MINECRAFT_RELEASE_VERSIONS_MANIFEST = "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json";
 }

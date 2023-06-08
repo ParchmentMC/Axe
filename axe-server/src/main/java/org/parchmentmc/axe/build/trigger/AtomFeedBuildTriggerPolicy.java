@@ -50,7 +50,7 @@ public class AtomFeedBuildTriggerPolicy extends BaseAsyncPolledBuildTrigger
     {
         final String feedUrl = context.getTriggerDescriptor().getProperties().get(Constants.ATOM_TRIGGER_URL_PARAM);
         final String lastUpdatedXPath = context.getTriggerDescriptor().getProperties().get(Constants.ATOM_TRIGGER_LAST_UPDATED_PATH);
-        final String newEntryXPath = context.getTriggerDescriptor().getProperties().get(Constants.ATOM_TRIGGER_NEW_ENTRY_PATH);
+        final String newEntryXPathPattern = context.getTriggerDescriptor().getProperties().get(Constants.ATOM_TRIGGER_NEW_ENTRY_PATH);
 
         try(final CloseableHttpClient client = HttpClientBuilder.create().build()) {
             final HttpGet versionsGetRequest = new HttpGet(feedUrl);
@@ -79,27 +79,32 @@ public class AtomFeedBuildTriggerPolicy extends BaseAsyncPolledBuildTrigger
                 if (Objects.equals(lastUpdatedValue, previousValue))
                     return previousValue;
 
+                final String newEntryXPath = newEntryXPathPattern.replace("{lastUpdatedValue}", lastUpdatedValue);
 
                 final NodeList newEntryMatchingList = (NodeList) xPath.compile(newEntryXPath).evaluate(xmlDocument, XPathConstants.NODESET);
-                if (lastUpdateMatchingList.getLength() != 1) {
-                    throw new IllegalStateException("Failed ot find the matching new entry node.");
+                final List<Node> newEntries = new ArrayList<>();
+                for (int i = 0; i < newEntryMatchingList.getLength(); i++) {
+                    newEntries.add(newEntryMatchingList.item(i));
+                }
+                final List<Node> reversed = new ArrayList<>(newEntries);
+                Collections.reverse(reversed);
+
+                for (Node node : reversed) {
+                    final BuildCustomizer buildCustomizer = buildCustomizerFactory.createBuildCustomizer(context.getBuildType(), null);
+                    final Map<String, String> customParams = new HashMap<>();
+
+                    final NodeList children = node.getChildNodes();
+                    for (int i = 0; i < children.getLength(); i++) {
+                        final Node child = children.item(i);
+
+                        customParams.put(jetbrains.buildServer.agent.Constants.ENV_PREFIX + getNodeName(child), getNodeValue(child));
+                    }
+                    buildCustomizer.setParameters(customParams);
+
+                    final BuildPromotion buildPromotion = buildCustomizer.createPromotion();
+                    buildPromotion.addToQueue(Constants.ATOM_TRIGGER_NAME);
                 }
 
-                final Node node = newEntryMatchingList.item(0);
-
-                final BuildCustomizer buildCustomizer = buildCustomizerFactory.createBuildCustomizer(context.getBuildType(), null);
-                final Map<String, String> customParams = new HashMap<>();
-
-                final NodeList children = node.getChildNodes();
-                for (int i = 0; i < children.getLength(); i++) {
-                    final Node child = children.item(i);
-
-                    customParams.put(jetbrains.buildServer.agent.Constants.ENV_PREFIX + getNodeName(child), getNodeValue(child));
-                }
-                buildCustomizer.setParameters(customParams);
-
-                final BuildPromotion buildPromotion = buildCustomizer.createPromotion();
-                buildPromotion.addToQueue(Constants.ATOM_TRIGGER_NAME);
                 return lastUpdatedValue;
             }
         }
